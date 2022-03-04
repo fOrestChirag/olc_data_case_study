@@ -58,7 +58,6 @@ def book_with_most_pages(final_df):
     """
     # Used spark sql here because in order to use dataframe for this type of subquery
     # we will need collect the value first and then use in the filter
-    final_df.createOrReplaceTempView("final_temp_table")
     olc_load.spark.sql("select title, number_of_pages from final_temp_table where number_of_pages = "
                        "(select max(number_of_pages) from final_temp_table)").show(truncate=False)
     data_query(final_df)

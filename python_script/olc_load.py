@@ -55,7 +55,8 @@ def save_df_to_table(final_df):
     :param final_df: Final spark dataframe with clean records and transformed columns.
     :return:
     """
-    final_df.write().mode("overwrite").saveAsTable(target_table)
+    final_df.createOrReplaceTempView("final_temp_table")
+    spark.sql("INSERT INTO TABLE {} SELECT * FROM final_temp_table".format(target_table))
 
 
 if __name__ == '__main__':
