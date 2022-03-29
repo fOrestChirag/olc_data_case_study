@@ -1,7 +1,7 @@
 import time
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import coalesce, to_date, year
+from pyspark.sql.functions import coalesce, to_date, year, regexp_replace
 import logging
 import olc_query
 
@@ -32,7 +32,7 @@ def transform_olc_dump(source_olc_df):
     :param source_olc_df: Spark dataframe with clean OL data records
     :return:
     """
-    author_transformed_df = source_olc_df.withColumn("author", source_olc_df.authors.getItem(0)).drop("authors")
+    author_transformed_df = source_olc_df.withColumn("author_id", regexp_replace(source_olc_df.authors.getItem(0), "/authors/", "")).drop("authors")
     publish_year_transformed_df = author_transformed_df.withColumn("publish_year",
                                                                    publish_year(author_transformed_df.publish_date)). \
         drop("publish_date").filter("publish_year between 1950 and 2022")
@@ -70,10 +70,10 @@ if __name__ == '__main__':
     olc_df = read_olc_dump()
     spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
     transformed_olc_df = transform_olc_dump(olc_df)
-    save_df_to_table(transformed_olc_df)
+    # save_df_to_table(transformed_olc_df)
     end_time = time.time()
 
     logger.info("Data Load completed at: {} ".format(end_time))
     logger.info("Total time taken to load the data: {} seconds".format(end_time-start_time))
-    # olc_query.data_query(transformed_olc_df)
+    olc_query.data_query(transformed_olc_df)
 
