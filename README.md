@@ -17,6 +17,20 @@ There are 2 tasks in this case study
 6. Author is in the first position of the author array and inside key field.
 7. Publish date is present in multiple formats, in order to maintain uniformity only publish year is loaded.
 
+_Note: Though the json dump contains name and personal_name in the dataset but the fill rate for these two fields is very less:_
+> olc_dump_df.filter("name is not null and name != ''").count() 
+
+339
+> olc_dump_df.filter("name is not null and name != '' and title is not null and title != ''").count()
+
+3
+> olc_dump_df.filter("personal_name is not null and personal_name != '' and title is not null and title != ''").count()
+
+3
+> 
+_This is the reason of choosing author id instead of author names_
+
+
 
 
 
